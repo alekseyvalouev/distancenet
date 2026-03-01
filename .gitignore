@@ -1,0 +1,8 @@
+.env
+*.png
+checkpoints
+plots
+wandb
+*.out
+__pycache__
+*.gif

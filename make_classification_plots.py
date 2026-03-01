@@ -51,10 +51,10 @@ def parse_args():
         ],
         help="Validation scenes",
     )
-    parser.add_argument("--horizons", nargs="+", type=int, default=[2, 4, 8, 16], help="Horizon values")
+    parser.add_argument("--horizons", nargs="+", type=int, default=[2, 4, 8], help="Horizon values")
     parser.add_argument("--negative_samples", action="store_true", default=True, help="Include negative samples")
     parser.add_argument("--n_classes", type=int, default=16, help="Number of output classes in the model")
-    parser.add_argument("--valid_classes", nargs="+", type=int, default=[0, 1, 2, 3, 4], help="Classes to keep for plotting (others are discarded)")
+    parser.add_argument("--valid_classes", nargs="+", type=int, default=[0, 1, 2, 3], help="Classes to keep for plotting (others are discarded)")
     parser.add_argument("--batch_size", type=int, default=256, help="Batch size for inference")
     parser.add_argument("--output_dir", type=str, default="plots", help="Directory to save plots")
     return parser.parse_args()

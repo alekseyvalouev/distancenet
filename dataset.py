@@ -94,6 +94,8 @@ class DistanceNetDataset(Dataset):
         label = horizon
         if self.classification:
             label = self.labels[horizon]
+        if label == -1:
+            label = max(self.horizons)
 
         return start_img, end_img, label
     

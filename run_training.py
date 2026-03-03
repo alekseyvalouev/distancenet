@@ -15,7 +15,7 @@ from trainer import RegressionDistanceNetTrainer, ClassificationDistanceNetTrain
 
 config = {
     "learning_rate": 0.0001,
-    "architecture": "DINOv2 Concat LinearHead Classification",
+    "architecture": "DINOv2 Concat LinearHead Regression",
     "dataset": "AdobeIndoorNav",
     "epochs": 100,
     "batch_size": 512,
@@ -26,7 +26,7 @@ run = wandb.init(
     # Set the wandb entity where your project will be logged (generally your team name).
     entity="valouev-university-of-california-berkeley",
     # Set the wandb project where this run will be logged.
-    project="distancenet-v2",
+    project="distancenet-v3",
     # Track hyperparameters and run metadata.
     config=config,
 )
@@ -66,14 +66,14 @@ test_scenes = [
     "et07-office-424",
 ]
 
-train_dataset = DistanceNetDataset(scenes=train_scenes, transform=transform, horizons=[2, 4, 8], classification=True)
-val_dataset = DistanceNetDataset(scenes=test_scenes, transform=transform, horizons=[2, 4, 8], classification=True)
+train_dataset = DistanceNetDataset(scenes=train_scenes, transform=transform, horizons=[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], classification=False)
+val_dataset = DistanceNetDataset(scenes=test_scenes, transform=transform, horizons=[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], classification=False)
 train_loader = DataLoader(train_dataset, batch_size=config["batch_size"], shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=config["batch_size"], shuffle=False)
 
-model = PairwiseDistanceNet(n_classes=4)
+model = PairwiseDistanceNet(n_classes=None)
 model = model.to(torch.device("cuda"))
-trainer = ClassificationDistanceNetTrainer(config, train_dataset, model, train_loader, val_loader)
+trainer = RegressionDistanceNetTrainer(config, train_dataset, model, train_loader, val_loader)
 
 for epoch in range(config["epochs"]):
     if config["architecture"] == "DINOv2 Concat LinearHead Classification":

@@ -38,11 +38,9 @@ class PairwiseDistanceNet(nn.Module):
         self.backbone = DINOv2_Backbone(backbone)
         self.n_classes = n_classes
         if (n_classes == None):
-            self.x1 = nn.Linear(2*384, 512)
+            self.x1 = nn.Linear(2*384, 64)
             self.a1 = nn.ReLU()
-            self.x2 = nn.Linear(512, 128)
-            self.a2 = nn.ReLU()
-            self.fc = nn.Linear(128, 1)
+            self.fc = nn.Linear(64, 1)
         else:
             self.fc = nn.Linear(2 * 384, n_classes)
     
@@ -50,7 +48,6 @@ class PairwiseDistanceNet(nn.Module):
         assert self.n_classes is None
         feats = torch.cat([self.backbone(x1), self.backbone(x2)], dim=1)
         feats = self.a1(self.x1(feats))
-        feats = self.a2(self.x2(feats))
         return self.fc(feats)
 
 if __name__ == "__main__":

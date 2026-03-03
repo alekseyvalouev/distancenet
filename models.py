@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torchvision
 
 def load_dino_backbone(name="dinov2_vits14_reg"):
     """_summary_
@@ -44,6 +45,22 @@ class PairwiseDistanceNet(nn.Module):
     def forward(self, x1, x2):
         return self.fc(torch.cat([self.backbone(x1), self.backbone(x2)], dim=1))
 
+class PairwiseEfficientNet(nn.Module):
+    """
+    NOT FROZEN!!!
+    """
+    def __init__(self, n_classes=5, backbone=0):
+        super().__init__()
+        assert backbone==0, "Backbone must be 0 :) Others not yet implemented."
+        self.backbone = torchvision.models.efficientnet_b0(weights='DEFAULT')
+        self.fc = nn.Linear(1000*2, n_classes)
+    
+    def forward(self, x1, x2):
+        return self.fc(torch.cat([self.backbone(x1), self.backbone(x2)], dim=1))
+
 if __name__ == "__main__":
-    model = PairwiseDistanceNet()
-    print(model)
+    model = PairwiseEfficientNet(n_classes=4)
+    x1 = torch.randn(4, 3, 224, 224)
+    x2 = torch.randn(4, 3, 224, 224)
+    out = model(x1, x2)
+    print(out.shape)

@@ -9,16 +9,16 @@ from seed import set_seed
 
 set_seed()
 
-from models import PairwiseDistanceNet
+from models import PairwiseDistanceNet, PairwiseEfficientNet
 from dataset import DistanceNetDataset
 from trainer import RegressionDistanceNetTrainer, ClassificationDistanceNetTrainer
 
 config = {
     "learning_rate": 0.0001,
-    "architecture": "DINOv2 Concat LinearHead Classification",
+    "architecture": "EfficientNet B0 Concat LinearHead Classification",
     "dataset": "AdobeIndoorNav",
     "epochs": 100,
-    "batch_size": 512,
+    "batch_size": 128,
 }
 
 # Start a new wandb run to track this script.
@@ -30,11 +30,22 @@ run = wandb.init(
     # Track hyperparameters and run metadata.
     config=config,
 )
-
-transform = T.Compose([
+transforms = [
     T.ToTensor(),
     T.Resize((224, 224)),
+]
+if "EfficientNet" in config["architecture"]:
+    transforms.append(T.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]))
+
+transforms.extend([
+    T.RandomHorizontalFlip(p=0.5),
+    #T.RandomVerticalFlip(p=0.25),
+    #T.RandomRotation(15),
+    #T.RandomAffine(degrees=15, translate=(0.1, 0.1), scale=(0.9, 1.1)),
+    T.ColorJitter(brightness=0.1, contrast=0.1, saturation=0.1, hue=0.1),
 ])
+
+transform = T.Compose(transforms)
 
 train_scenes = [
     "et07-imagination-lab",
@@ -71,12 +82,12 @@ val_dataset = DistanceNetDataset(scenes=test_scenes, transform=transform, horizo
 train_loader = DataLoader(train_dataset, batch_size=config["batch_size"], shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=config["batch_size"], shuffle=False)
 
-model = PairwiseDistanceNet(n_classes=4)
+model = PairwiseEfficientNet(n_classes=4)
 model = model.to(torch.device("cuda"))
 trainer = ClassificationDistanceNetTrainer(config, train_dataset, model, train_loader, val_loader)
 
 for epoch in range(config["epochs"]):
-    if config["architecture"] == "DINOv2 Concat LinearHead Classification":
+    if "Classification" in config["architecture"]:
         train_loss, train_acc = trainer._train_one_epoch()
         val_loss, val_acc = trainer._evaluate()
         wandb.log({

@@ -17,8 +17,8 @@ config = {
     "learning_rate": 0.0001,
     "architecture": "DINOv2 Concat LinearHead Regression",
     "dataset": "AdobeIndoorNav",
-    "epochs": 100,
-    "batch_size": 512,
+    "epochs": 10,
+    "batch_size": 1024,
 }
 
 # Start a new wandb run to track this script.

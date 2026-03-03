@@ -5,6 +5,7 @@ of a DistanceNetDataset.
 import matplotlib.pyplot as plt
 from collections import Counter
 from dataset import DistanceNetDataset
+from torchvision import transforms as T
 
 
 def plot_class_distribution(dataset):
@@ -40,5 +41,29 @@ def plot_class_distribution(dataset):
     plt.show()
 
 if __name__ == "__main__":
-    dataset = DistanceNetDataset()
-    plot_class_distribution(dataset)
+    transform = T.Compose([
+        T.ToTensor(),
+        T.Resize((224, 224)),
+    ])
+
+    train_scenes = [
+        "et07-imagination-lab",
+        "et12-corner-2",
+        "et12-cr-helsinki",
+        "et12-cr-honolulu",
+        "et12-cr-hamburg",
+        "et12-office-104",
+        "et12-office-108",
+        "et12-office-110",
+        "et12-office-111",
+        "et12-office-112",
+        "et12-office-113",
+        "et12-office-114",
+        "et12-office-115",
+        "et12-office-117",
+        "et12-office-132",
+    ]
+
+
+    train_dataset = DistanceNetDataset(scenes=train_scenes, transform=transform, horizons=[2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16], classification=False)
+    plot_class_distribution(train_dataset)
